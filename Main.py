@@ -22,18 +22,18 @@ class Node:
     hcost = 14
     fcost = None
 
-    """
-    To create a node we need a x and a y coordinates 
-    """
+    """ To create a node we need a x and a y coordinates """
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
-    """
-    Calculates the hcost, gcost and fcost using nodes own x and y and additional 
-    parameters "end_node" and "start_node"
-    """
-    def calculate_values(self, start_node, end_node=(0, 0)):
+    def calculate_values(self, start_node, end_node):
+        """
+        Calculates the hcost, gcost and fcost using nodes own x and y and additional
+        parameters "end_node" and "start_node"
+        :param start_node tuple or list of 2 values, x and y
+        :param end_node same as start_node, but with endpoint coordinates
+        """
         self.gcost = floor(sqrt((self.x - start_node[0])**2 + (self.y - start_node[1])**2) * 10)
         self.hcost = floor(sqrt((self.x - end_node[0])**2 + (self.y - end_node[1])**2) * 10)
         self.fcost = self.gcost + self.hcost
@@ -57,4 +57,3 @@ if __name__ == "__main__":
     print(node1)
     node1.calculate_values((1, 1))
     print(node1.hcost)
-
