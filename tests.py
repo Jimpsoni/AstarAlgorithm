@@ -20,20 +20,20 @@ class testNodeMethods(unittest.TestCase):
 
 
 class testAstarMethods(unittest.TestCase):
-    def test_calculate_neighbors(self):
-        start, end = Node(1, 1), Node(5, 9)
+    def test_get_neighbors(self):
+        start, end = Node(1, 1), Node(4, 4)
         width, height = 5, 5
         alg = AStar(start, end, width, height)
-        nodes = alg.calculate_neighbors(Node(1, 1))
+        nodes = alg.get_neighbors(Node(1, 1))
 
         self.assertEqual(8, len(nodes))
         self.assertEqual(0, nodes[0].x)
         self.assertEqual(0, nodes[0].y)
-        self.assertEqual(2, nodes[7].x)
-        self.assertEqual(2, nodes[7].y)
+        self.assertEqual(1, nodes[6].x)
+        self.assertEqual(2, nodes[6].y)
 
-        nodes = alg.calculate_neighbors(Node(0, 0))
+        nodes = alg.get_neighbors(Node(0, 0))
         self.assertEqual(3, len(nodes))
 
-        nodes = alg.calculate_neighbors(Node(4, 4))
+        nodes = alg.get_neighbors(Node(4, 4))
         self.assertEqual(3, len(nodes))
