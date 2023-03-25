@@ -119,7 +119,13 @@ class AStar:
         self.nodes.append(self.start)
 
     def iteration(self):
+        """
+        Goes through one iteration of the algorithm
+        :return: Path, when we find one
+        """
         # Get the smallest fcost node Nodes
+        if len(self.nodes) < 1:
+            return []
         current = min(self.nodes, key=attrgetter("fcost"))
         self.nodes.remove(current)
         self.checked.append(current)
@@ -143,8 +149,16 @@ class AStar:
 
 
 if __name__ == "__main__":
-    node = Node(3, 3)
-    game = AStar(Node(0, 0), Node(3, 3), 4, 4)
+    game = AStar(Node(0, 0), Node(4, 4), 5, 5)
+
+    # Create a map
+    game.board[1, 1] = 1
+    game.board[1, 2] = 1
+    game.board[2, 3] = 1
+    game.board[3, 3] = 1
+    game.board[4, 3] = 1
+    game.board[1, 4] = 1
+
     print(game)
 
     for node in game.run():
