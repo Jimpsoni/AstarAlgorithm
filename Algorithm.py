@@ -26,6 +26,7 @@ class Node:
     hcost = 2**63-1
     fcost = 2**63-1
     previous_node = None
+    traversable = True
 
     """ To create a node we need a x and a y coordinates """
     def __init__(self, x, y):
@@ -48,8 +49,11 @@ class Node:
     def gcost_to(self, node):
         return floor(sqrt((self.x - node.x) ** 2 + (self.y - node.y) ** 2) * 10)
 
+    def set_as_start(self):
+        self.gcost = 0
+
     def __str__(self):
-        return f"I am node at ({self.x}, {self.y})"
+        return f"Node({self.x}, {self.y})"
 
     def __eq__(self, node):
         return (self.x == node.x) and (self.y == node.y)
@@ -67,11 +71,12 @@ class AStar:
         self.start = start
         self.end = end
 
-        self.board = np.zeros((height, width))
-        self.board[start.y, start.x] = 2
-        self.board[end.y, end.x] = 3
         self.width = width
         self.height = height
+
+        self.board = self.make_board()
+        self.board[self.start.y][self.start.x].set_as_start()
+        self.nodes.append(start)
 
     def get_neighbors(self, node):
         """ Returns all the available neighbors of the given node """
@@ -82,9 +87,8 @@ class AStar:
                 # If we are out of the board, or we are at centerpiece
                 if 0 <= node.y + i < self.height and 0 <= node.x + j < self.width and not (i == 0 and j == 0):
                     # If the node is traversable
-                    if self.board[node.y + i, node.x + j] != 1:
-                        new_node = Node(node.x + j, node.y + i)
-                        nodes.append(new_node)
+                    if self.board[node.y + i][node.x + j].traversable:
+                        nodes.append(self.board[node.y + i][node.x + j])
 
         return nodes
 
@@ -106,7 +110,6 @@ class AStar:
 
     def run(self):
         """ The main method to solve the path """
-        self.set_up()
         path = None
 
         while path is None:
@@ -115,8 +118,8 @@ class AStar:
 
         return path
 
-    def set_up(self):
-        self.nodes.append(self.start)
+    def make_board(self):
+        return [[Node(i, j) for i in range(0, self.width)] for j in range(0, self.height)]
 
     def iteration(self):
         """
@@ -130,38 +133,29 @@ class AStar:
         self.nodes.remove(current)
         self.checked.append(current)
 
-        for neighbor in self.get_neighbors(current):
-            if neighbor == self.end:
-                return self.get_path(current)
+        if current == self.end:
+            return self.get_path(current)
 
+        for neighbor in self.get_neighbors(current):
             if neighbor in self.checked:
                 continue
 
-            if neighbor not in self.nodes or neighbor.gcost >= current.gcost + current.gcost_to(neighbor):
+            if neighbor not in self.nodes or neighbor.gcost > (current.gcost + current.gcost_to(neighbor)):
                 neighbor.calculate_values(current, self.end)
                 neighbor.previous = current
                 if neighbor not in self.nodes:
                     self.nodes.append(neighbor)
 
+    def print_board(self):
+        for row in self.board:
+            for node in row:
+                print(node)
+
     def __str__(self):
         """ Return string representation of the board """
-        return np.array2string(self.board)
+        return str([str(line) + "\n" for line in self.board])
 
 
 if __name__ == "__main__":
     game = AStar(Node(0, 0), Node(4, 4), 5, 5)
-
-    # Create a map
-    game.board[1, 1] = 1
-    game.board[1, 2] = 1
-    game.board[2, 3] = 1
-    game.board[3, 3] = 1
-    game.board[4, 3] = 1
-    game.board[1, 4] = 1
-
-    print(game)
-
-    for node in game.run():
-        game.board[node.y, node.x] = 5
-
-    print(game)
+    game.print_board()
