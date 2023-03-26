@@ -6,6 +6,7 @@ class testNodeMethods(unittest.TestCase):
     def test_calculate_values(self):
         # Test hcost, gcost and fcost
         start, end, node = Node(1, 1), Node(5, 9), Node(2, 2)
+        start.gcost = 0
         node.calculate_values(start, end)
 
         self.assertEqual(14, node.gcost)
@@ -13,6 +14,7 @@ class testNodeMethods(unittest.TestCase):
         self.assertEqual(90, node.fcost)
 
         start, end, node = Node(5, 2), Node(2, 5), Node(2, 2)
+        start.gcost = 0
         node.calculate_values(start, end)
         self.assertEqual(30, node.gcost)
         self.assertEqual(30, node.hcost)
@@ -22,6 +24,7 @@ class testNodeMethods(unittest.TestCase):
 class testAstarMethods(unittest.TestCase):
     def test_get_neighbors(self):
         start, end = Node(1, 1), Node(4, 4)
+        start.gcost = 0
         width, height = 5, 5
         alg = AStar(start, end, width, height)
         nodes = alg.get_neighbors(Node(1, 1))
