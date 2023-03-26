@@ -35,6 +35,12 @@ def set_up():
             pg.draw.rect(screen, pg.color.Color(255, 255, 255), ((x + 20) * j + 50, (y + 20) * i + 50, width, height))
 
 
+def draw_route(shortest_route):
+    for n in shortest_route:
+        pg.draw.rect(screen, pg.color.Color(155, 155, 155), ((100 + 20) * n.x + 50, (100 + 20) * n.y + 50, 100, 100))
+    pg.display.update()
+
+
 def draw_screen():
     """
     Gets the checked nodes and current nodes from Astar class and draws them
@@ -50,8 +56,14 @@ def draw_screen():
 
 running = True
 
-# set up the game and also the visualization board
-game.set_up()
+# Create a map
+game.board[1][1].traversable = False
+game.board[1][2].traversable = False
+game.board[2][3].traversable = False
+game.board[3][3].traversable = False
+game.board[4][3].traversable = False
+game.board[1][4].traversable = False
+
 set_up()
 
 while running:
@@ -62,10 +74,13 @@ while running:
 
     # When game iteration returns something else than none
     # it has found the path
-    if game.iteration() is not None:
+    path = game.iteration()
+    if path is not None:
+        draw_route(path)
+        time.sleep(2)
         break
 
     # Updates screen
     draw_screen()
 
-    time.sleep(1)
+    time.sleep(0.5)
