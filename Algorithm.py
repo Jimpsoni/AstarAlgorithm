@@ -1,13 +1,6 @@
-try:
-    from math import sqrt, floor
-    import numpy as np
-    from operator import attrgetter
-except ImportError as e:
-    print("Couldn't import " + e.name)
-    from math import sqrt, floor
-    import numpy as np
-    from operator import attrgetter
-
+from __future__ import annotations
+from math import sqrt, floor
+from operator import attrgetter
 
 """
 RULES OF A* ALGORITHM
@@ -19,28 +12,29 @@ fcost - Addition of the previous two
 
 
 
-TODO Change the type of algorithm so it favors nodes with least h_cost
+TODO - List 
+- Change the type of algorithm so it favors nodes with least h_cost
 
 
 """
 
 
 class Node:
-    # Initialize cost variables to max int16 values because we probably don't have that big board
-    # 2**16 = 65536 so the board would be over 6k nodes in width
-    gcost = 2**16-1
-    hcost = 2**16-1
-    fcost = 2**16-1
+    # Initialize cost variables to max int32 values because we probably don't have that big board
+    # 2**32 = 4294967296 so the board would be over 65536 nodes in width
+    gcost = 2**32-1
+    hcost = 2**32-1
+    fcost = 2**32-1
 
     previous_node = None
     traversable = True
 
-    def __init__(self, x, y):
+    def __init__(self, x: int, y: int) -> None:
         """ To create a node we need a x and a y coordinates """
         self.x = x
         self.y = y
 
-    def calculate_values(self, start_node, end_node):
+    def calculate_values(self, start_node: Node, end_node: Node) -> None:
         """
         Calculates the hcost, gcost and fcost using nodes own x and y and additional
         parameters "end_node" and "start_node" and calculating the distance to those points
@@ -53,17 +47,17 @@ class Node:
         self.fcost = self.gcost + self.hcost
         self.previous_node = start_node
 
-    def gcost_to(self, node):
+    def gcost_to(self, node: Node) -> int:
         """ returns the gcost to a node """
         return floor(sqrt((self.x - node.x) ** 2 + (self.y - node.y) ** 2) * 10)
 
-    def set_as_start(self):
+    def set_as_start(self) -> None:
         self.gcost = 0
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Node({self.x}, {self.y})"
 
-    def __eq__(self, node):
+    def __eq__(self, node) -> bool:
         """ Checking if two nodes are equal """
         return (self.x == node.x) and (self.y == node.y)
 
@@ -92,7 +86,7 @@ class AStar:
         self.board[self.start.y][self.start.x].set_as_start()
         self.nodes.append(start)
 
-    def get_neighbors(self, node):
+    def get_neighbors(self, node: Node) -> list[Node]:
         """
         Returns all the available neighbors of the given node. This excludes all the nodes that are not traversable
         and the centerpiece.
@@ -110,7 +104,7 @@ class AStar:
 
         return nodes
 
-    def give_values(self, node, current):
+    def give_values(self, node: Node, current: Node) -> None:
         """
         Yeah dude, no idea why this is here
         :param node:
@@ -119,21 +113,17 @@ class AStar:
         """
         node.calculate_values(current, self.end)
 
-    @staticmethod
-    def get_path(current):
+    def make_board(self) -> list[list[Node]]:
         """
-        Makes a list of all the nodes needed
-        :param current: the end node of our path
-        :return: List is nodes that are in the path
+        :return: 2D list that has height amount of lists size of the width full of nodes.
         """
-        path = []
-        while current.previous_node is not None:
-            path.append(current)
-            current = current.previous_node
-        return path
+        return [[Node(i, j) for i in range(0, self.width)] for j in range(0, self.height)]
 
-    def run(self):
-        """ The main method to solve the path """
+    def run(self) -> list[Node]:
+        """
+        Runs iterations until we find the end
+        :return: Path from start to the end
+        """
         path = None
 
         while path is None:
@@ -142,13 +132,10 @@ class AStar:
 
         return path
 
-    def make_board(self):
-        return [[Node(i, j) for i in range(0, self.width)] for j in range(0, self.height)]
-
-    def iteration(self):
+    def iteration(self) -> list[Node]:
         """
         Goes through one iteration of the algorithm
-        :return: Path, when we find one
+        :return: Path, if we find one on the current iteration
         """
         # Get the smallest fcost node Nodes
         if len(self.nodes) < 1:
@@ -164,23 +151,36 @@ class AStar:
             if neighbor in self.checked:
                 continue
 
+            # If the neighbor is not in the nodes or we find a shorter path to the node
             if neighbor not in self.nodes or neighbor.gcost > (current.gcost + current.gcost_to(neighbor)):
+                # Then we calculate the path to this node
                 neighbor.calculate_values(current, self.end)
                 neighbor.previous = current
                 if neighbor not in self.nodes:
                     self.nodes.append(neighbor)
 
-    def print_board(self):
+    @staticmethod
+    def get_path(current) -> list[Node]:
         """
-        Prints out the board
-        :return: None
+        Goes back the shortest path and appends all the nodes into the list until we arrive at the start, where previous
+        node is None
+        :param current: the end node of our path
+        :return: List is nodes that are in the path
         """
+        path = []
+        while current.previous_node is not None:
+            path.append(current)
+            current = current.previous_node
+        return path
+
+    def print_board(self) -> None:
+        """ Prints the board in to the console """
         for row in self.board:
             for node in row:
                 print(str(node) + "  ", end="")
             print("\n")
 
-    def __str__(self):
+    def __str__(self) -> str:
         """ Return string representation of the board """
         return str([str(line) + "\n" for line in self.board])
 
