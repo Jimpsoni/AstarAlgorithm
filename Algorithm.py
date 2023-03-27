@@ -17,19 +17,26 @@ gcost - Distance from start point
 hcost - Distance from end point
 fcost - Addition of the previous two
 
+
+
+TODO Change the type of algorithm so it favors nodes with least h_cost
+
+
 """
 
 
 class Node:
-    # Initialize cost variables to max int64 values
-    gcost = 2**63-1
-    hcost = 2**63-1
-    fcost = 2**63-1
+    # Initialize cost variables to max int16 values because we probably don't have that big board
+    # 2**16 = 65536 so the board would be over 6k nodes in width
+    gcost = 2**16-1
+    hcost = 2**16-1
+    fcost = 2**16-1
+
     previous_node = None
     traversable = True
 
-    """ To create a node we need a x and a y coordinates """
     def __init__(self, x, y):
+        """ To create a node we need a x and a y coordinates """
         self.x = x
         self.y = y
 
@@ -47,6 +54,7 @@ class Node:
         self.previous_node = start_node
 
     def gcost_to(self, node):
+        """ returns the gcost to a node """
         return floor(sqrt((self.x - node.x) ** 2 + (self.y - node.y) ** 2) * 10)
 
     def set_as_start(self):
@@ -56,17 +64,23 @@ class Node:
         return f"Node({self.x}, {self.y})"
 
     def __eq__(self, node):
+        """ Checking if two nodes are equal """
         return (self.x == node.x) and (self.y == node.y)
 
 
 class AStar:
-    """
-    In the board, we mark all the available spaces with 0 and walls with 1
-    """
     nodes = []
     checked = []
 
-    def __init__(self, start, end, width, height):
+    def __init__(self, start: Node, end: Node, width: int, height: int) -> None:
+        """
+        We make a board with given width and height, then we call the make_board method
+        to initialize node for each of the squares.
+        :param start:  Node we start from
+        :param end:    Node we end up in
+        :param width:  Width of the board
+        :param height: Height of the board
+        """
         # Start and end point
         self.start = start
         self.end = end
@@ -79,8 +93,12 @@ class AStar:
         self.nodes.append(start)
 
     def get_neighbors(self, node):
-        """ Returns all the available neighbors of the given node """
-        nodes = []
+        """
+        Returns all the available neighbors of the given node. This excludes all the nodes that are not traversable
+        and the centerpiece.
+        :param node: The node of which neighbors we get
+        """
+        nodes = []  # Here we append all the neighbors
 
         for i in range(-1, 2):
             for j in range(-1, 2):
@@ -93,6 +111,12 @@ class AStar:
         return nodes
 
     def give_values(self, node, current):
+        """
+        Yeah dude, no idea why this is here
+        :param node:
+        :param current:
+        :return:
+        """
         node.calculate_values(current, self.end)
 
     @staticmethod
@@ -147,9 +171,14 @@ class AStar:
                     self.nodes.append(neighbor)
 
     def print_board(self):
+        """
+        Prints out the board
+        :return: None
+        """
         for row in self.board:
             for node in row:
-                print(node)
+                print(str(node) + "  ", end="")
+            print("\n")
 
     def __str__(self):
         """ Return string representation of the board """
