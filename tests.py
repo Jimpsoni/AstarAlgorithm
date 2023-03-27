@@ -20,6 +20,17 @@ class testNodeMethods(unittest.TestCase):
         self.assertEqual(30, node.hcost)
         self.assertEqual(60, node.fcost)
 
+    def test_gcost_to(self):
+        start_node = Node(1, 1)
+        end_node = Node(1, 2)
+        self.assertEqual(10, start_node.gcost_to(end_node))
+
+        end_node = Node(2, 2)
+        self.assertEqual(14, start_node.gcost_to(end_node))
+
+        end_node = Node(1, 1)
+        self.assertEqual(0, start_node.gcost_to(end_node))
+
 
 class testAstarMethods(unittest.TestCase):
     def test_get_neighbors(self):
@@ -40,3 +51,5 @@ class testAstarMethods(unittest.TestCase):
 
         nodes = alg.get_neighbors(Node(4, 4))
         self.assertEqual(3, len(nodes))
+
+
