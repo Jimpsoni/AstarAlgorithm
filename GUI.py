@@ -1,5 +1,7 @@
 import time
-from Algorithm import AStar, Node
+from AStar import AStar, Node
+from Window import Window
+from DrawMaze import DrawingBoard
 
 try:
     import pygame as pg
@@ -8,33 +10,28 @@ except ImportError as e:
     import pygame as pg
 
 
-class visualizer:
-
-    # Not initialized yet
-    screen = None
-
+class visualizer(Window):
     # All the colors we need
     nodes = pg.color.Color(84, 212, 72)
     unchecked = pg.color.Color(255, 255, 255)
+    checked = pg.color.Color(228, 79, 79)
     start_point_color = pg.color.Color(230, 140, 10)
     end_point_color = pg.color.Color(148, 13, 40)
     not_traversable = pg.color.Color(16, 38, 68)
-    checked = pg.color.Color(228, 79, 79)
 
     between_tiles = 1
 
-    game = AStar(Node(0, 0), Node(24, 24), 25, 25)
+    game = AStar(Node(0, 0), Node(49, 49), 50, 50)
 
-    def __init__(self, width: int, height: int) -> None:
-        pg.init()
+    def __init__(self, width: int, height: int, title: str, game: AStar) -> None:
+        super().__init__(width, height, title)
+
+        self.game = game
+
         self.width, self.height = width, height
         self.start_point = self.width - self.height
         self.tile_width = self.height / self.game.width - 2 * self.between_tiles
         self.tile_height = self.height / self.game.height - 2 * self.between_tiles
-
-    def set_display(self) -> None:
-        self.screen = pg.display.set_mode((self.width, self.height))
-        pg.display.set_caption("A* path solving algorithm")
 
     def draw_tile(self, x: float, y: float, color: pg.color) -> None:
         """ Draws a single tile """
@@ -61,9 +58,11 @@ class visualizer:
         self.draw_tile(self.game.start.x, self.game.start.y, self.start_point_color)
         self.draw_tile(self.game.end.x, self.game.end.y, self.end_point_color)
 
+        pg.display.update()
+
     def draw_route(self, shortest_route: list[Node]) -> None:
         """ Draws the final route to destination """
-        color = pg.color.Color(155, 155, 155)
+        color = pg.color.Color(243, 101, 31)
         for n in shortest_route:
             self.draw_tile(n.x, n.y, color)
 
@@ -86,14 +85,6 @@ class visualizer:
     def run(self):
         running = True
 
-        # Create a map
-        self.game.board[1][1].traversable = False
-        self.game.board[1][2].traversable = False
-        self.game.board[2][3].traversable = False
-        self.game.board[3][3].traversable = False
-        self.game.board[4][3].traversable = False
-        self.game.board[1][4].traversable = False
-
         self.set_up()
 
         while running:
@@ -108,16 +99,26 @@ class visualizer:
             if path is not None:
                 self.set_up()
                 self.draw_route(path)
-                time.sleep(3)
+                pg.time.wait(15000)
                 break
 
             # Draws everything on screen
             self.draw_screen()
 
-            pg.time.wait(10)
-
 
 if __name__ == "__main__":
-    visualizer = visualizer(1200, 900)
-    visualizer.set_display()
-    visualizer.run()
+    """
+    problem = AStar(Node(0, 0), Node(49, 49), 50, 50)
+    b = DrawingBoard(600, 600, problem.make_board(), "Drawing board")
+
+    b.show_display()
+    b.draw_board()
+    b.drawing_mode()
+
+    problem.board = b.get_board()
+    """
+    problem = AStar(Node(0, 0), Node(49, 49), 50, 50)
+    visualizer = visualizer(1200, 900, "A* algorithm", problem)
+    visualizer.show_display()
+    visualizer.set_up()
+    visualizer.show()
