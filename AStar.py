@@ -10,8 +10,6 @@ gcost - Distance from start point
 hcost - Distance from end point
 fcost - Addition of the previous two
 
-
-
 TODO - List 
 - Change the type of algorithm so it favors nodes with least h_cost
 
@@ -53,6 +51,9 @@ class Node:
 
     def set_as_start(self) -> None:
         self.gcost = 0
+
+    def change_traversable(self):
+        self.traversable = not self.traversable
 
     def __str__(self) -> str:
         return f"Node({self.x}, {self.y})"
