@@ -1,5 +1,5 @@
 import unittest
-from Algorithm import Node, AStar
+from AStar import Node, AStar
 
 
 class testNodeMethods(unittest.TestCase):
