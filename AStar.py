@@ -5,14 +5,9 @@ from operator import attrgetter
 """
 RULES OF A* ALGORITHM
 
-We calculate the gcost, hcost and fcost values
-gcost - Distance from start point
-hcost - Distance from end point
-fcost - Addition of the previous two
-
 TODO - List 
 - Change the type of algorithm so it favors nodes with least h_cost
-
+- Change the algorithm so it doesn't skip corners
 
 """
 
@@ -28,7 +23,7 @@ class Node:
     traversable = True
 
     def __init__(self, x: int, y: int) -> None:
-        """ To create a node we need a x and a y coordinates """
+        """ To create a node we need an x and a y coordinates """
         self.x = x
         self.y = y
 
@@ -71,6 +66,7 @@ class AStar:
         """
         We make a board with given width and height, then we call the make_board method
         to initialize node for each of the squares.
+
         :param start:  Node we start from
         :param end:    Node we end up in
         :param width:  Width of the board
@@ -87,12 +83,13 @@ class AStar:
         self.board[self.start.y][self.start.x].set_as_start()
         self.nodes.append(start)
 
+
+    """
     def get_neighbors(self, node: Node) -> list[Node]:
-        """
         Returns all the available neighbors of the given node. This excludes all the nodes that are not traversable
         and the centerpiece.
         :param node: The node of which neighbors we get
-        """
+        
         nodes = []  # Here we append all the neighbors
 
         for i in range(-1, 2):
@@ -104,6 +101,28 @@ class AStar:
                         nodes.append(self.board[node.y + i][node.x + j])
 
         return nodes
+    """
+    def get_neighbors(self, node):
+        nodes = []  # Here we append all the neighbors
+
+        if node.x + 1 < len(self.board[0]):
+            if self.board[node.y][node.x + 1].traversable:
+                nodes.append(self.board[node.y][node.x + 1])
+
+        if node.x - 1 >= 0:
+            if self.board[node.y][node.x - 1].traversable:
+                nodes.append(self.board[node.y][node.x - 1])
+
+        if node.y + 1 < len(self.board):
+            if self.board[node.y + 1][node.x].traversable:
+                nodes.append(self.board[node.y + 1][node.x])
+
+        if node.y - 1 >= 0:
+            if self.board[node.y - 1][node.x].traversable:
+                nodes.append(self.board[node.y - 1][node.x])
+
+        return nodes
+
 
     def give_values(self, node: Node, current: Node) -> None:
         """
@@ -152,7 +171,7 @@ class AStar:
             if neighbor in self.checked:
                 continue
 
-            # If the neighbor is not in the nodes or we find a shorter path to the node
+            # If the neighbor is not in the nodes, or we find a shorter path to the node
             if neighbor not in self.nodes or neighbor.gcost > (current.gcost + current.gcost_to(neighbor)):
                 # Then we calculate the path to this node
                 neighbor.calculate_values(current, self.end)
@@ -187,5 +206,5 @@ class AStar:
 
 
 if __name__ == "__main__":
-    game = AStar(Node(0, 0), Node(4, 4), 5, 5)
-    game.print_board()
+    print("This is the AStar algorithm\n")
+    print("Rules are simple:")
