@@ -1,3 +1,5 @@
+import pygame.time
+
 from AStar import AStar, Node
 from CreateMaze import CreateMaze
 from GUI import visualizer
@@ -11,7 +13,7 @@ board_width, board_height = int(setup.board_dim), int(setup.board_dim)
 # ===============================================
 #               Variables
 
-delay = 1000
+delay = 0
 
 # ================================================
 
@@ -28,10 +30,13 @@ v.set_up()
 maze.stack.append(Node(0, 0))
 
 while True:
-    if maze.iteration() == "Complete!":
+    iteration = maze.iteration()
+    if maze.iteration() is not None:
         break
     v.board = maze.get_board()
     v.set_up()
+
+    pygame.time.wait(delay)
 
 v.set_up()
 v.run()

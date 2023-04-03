@@ -1,7 +1,5 @@
-import time
-from AStar import AStar, Node
-from Window import Window
-from DrawMaze import DrawingBoard
+from AStar import AStar
+from Node import Node
 
 try:
     import pygame as pg
@@ -10,7 +8,7 @@ except ImportError as e:
     import pygame as pg
 
 
-class visualizer(Window):
+class visualizer:
     # All the colors we need
     nodes = pg.color.Color(84, 212, 72)
     unchecked = pg.color.Color(255, 255, 255)
@@ -24,7 +22,9 @@ class visualizer(Window):
     game = AStar(Node(0, 0), Node(49, 49), 50, 50)
 
     def __init__(self, width: int, height: int, title: str, game: AStar) -> None:
-        super().__init__(width, height, title)
+        self.screen = None
+        self.title = title
+        pg.init()
 
         self.game = game
 
@@ -39,6 +39,19 @@ class visualizer(Window):
         x_coord = self.start_point + self.between_tiles + (self.tile_width + 2 * self.between_tiles) * x
         y_coord = self.between_tiles + (self.tile_width + 2 * self.between_tiles) * y
         pg.draw.rect(self.screen, color, (x_coord, y_coord, self.tile_width, self.tile_height))
+
+    def show_display(self):
+        self.screen = pg.display.set_mode((self.width, self.height))
+        pg.display.set_caption(self.title)
+
+    @staticmethod
+    def show():
+        running = True
+        while running:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    running = False
 
     def set_up(self) -> None:
         """

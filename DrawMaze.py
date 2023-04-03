@@ -3,6 +3,10 @@ import pygame as pg
 from AStar import Node, AStar
 from Window import Window
 
+"""
+This is probably going to be removed and merged with GUI.py
+"""
+
 
 class DrawingBoard(Window):
     def __init__(self, width, height, board: list[list[Node]], title: str = "Drawing board"):
