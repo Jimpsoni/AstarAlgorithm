@@ -32,6 +32,7 @@ class visualizer(Window):
         self.start_point = self.width - self.height
         self.tile_width = self.height / self.game.width - 2 * self.between_tiles
         self.tile_height = self.height / self.game.height - 2 * self.between_tiles
+        self.DELAY = 0
 
     def draw_tile(self, x: float, y: float, color: pg.color) -> None:
         """ Draws a single tile """
@@ -104,6 +105,9 @@ class visualizer(Window):
 
             # Draws everything on screen
             self.draw_screen()
+
+            # Set a small delay, so it's easier to follow the progress
+            pg.time.wait(self.DELAY)
 
 
 if __name__ == "__main__":
