@@ -1,29 +1,22 @@
-import time
 from random import choice
 from AStar import AStar, Node
+from Algorithm import Algorithm
 from GUI import visualizer
 
 
 """
-TODO Big time debug
+TODO Make it faster
 """
 
 
-class CreateMaze:
+class CreateMaze(Algorithm):
     def __init__(self, width, height):
         self.width = width
         self.height = height
-
-        self.board = self.make_board()
+        super().__init__(width, height)
 
         self.stack = []
         self.visited = []
-
-    def make_board(self) -> list[list[Node]]:
-        """
-        :return: 2D list that has height amount of lists size of the width full of nodes.
-        """
-        return [[Node(i, j) for i in range(0, self.width)] for j in range(0, self.height)]
 
     def fill_with_walls(self):
         for i in range(0, self.height):
@@ -34,11 +27,11 @@ class CreateMaze:
     def iteration(self):
         # Take the top node of the stack
         if len(self.stack) == 0:
-            return "Complete!"
+            return 1
         current = self.stack[-1]
 
         # Get its neighbors
-        neighbors = self.get_neighbors(current)
+        neighbors = self.get_neighbors(current, 2, self.validate_neighbor)
 
         if len(neighbors) == 0:
             self.visited.append(current)
@@ -51,34 +44,13 @@ class CreateMaze:
         self.stack.append(random_node)
         self.visited.append(current)
 
+    def validate_neighbor(self, node):
+        return node not in self.visited
+
     def destroy_wall(self, start_node, end_node):
         y = int(start_node.y + (end_node.y - start_node.y) / 2)
         x = int(start_node.x + (end_node.x - start_node.x) / 2)
         self.board[y][x].traversable = True
-
-    def get_neighbors(self, node):
-        nodes = []  # Here we append all the neighbors
-
-        if node.x + 2 < len(self.board[0]):
-            if self.board[node.y][node.x + 2] not in self.visited:
-                nodes.append(self.board[node.y][node.x + 2])
-
-        if node.x - 2 >= 0:
-            if self.board[node.y][node.x - 2] not in self.visited:
-                nodes.append(self.board[node.y][node.x - 2])
-
-        if node.y + 2 < len(self.board):
-            if self.board[node.y + 2][node.x] not in self.visited:
-                nodes.append(self.board[node.y + 2][node.x])
-
-        if node.y - 2 >= 0:
-            if self.board[node.y - 2][node.x] not in self.visited:
-                nodes.append(self.board[node.y - 2][node.x])
-
-        return nodes
-
-    def get_board(self):
-        return self.board
 
 
 if __name__ == "__main__":
