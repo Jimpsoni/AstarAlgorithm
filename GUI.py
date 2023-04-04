@@ -124,16 +124,6 @@ class visualizer:
 
 
 if __name__ == "__main__":
-    """
-    problem = AStar(Node(0, 0), Node(49, 49), 50, 50)
-    b = DrawingBoard(600, 600, problem.make_board(), "Drawing board")
-
-    b.show_display()
-    b.draw_board()
-    b.drawing_mode()
-
-    problem.board = b.get_board()
-    """
     problem = AStar(Node(0, 0), Node(49, 49), 50, 50)
     visualizer = visualizer(1200, 900, "A* algorithm", problem)
     visualizer.show_display()
