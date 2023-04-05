@@ -1,4 +1,5 @@
 from AStar import AStar
+from Algorithm import Algorithm
 from Node import Node
 
 try:
@@ -122,10 +123,46 @@ class visualizer:
             # Set a small delay, so it's easier to follow the progress
             pg.time.wait(self.DELAY)
 
+    def get_node_from_coordinates(self, coordinates):
+        x_coord = coordinates[0] // (self.tile_width + 2 * self.between_tiles)
+        y_coord = coordinates[1] // (self.tile_height + 2 * self.between_tiles)
+
+        return int(x_coord), int(y_coord)
+
+    def drawing_mode(self):
+        drawing = False
+        running = True
+        draw_walls = True
+
+        board = Algorithm.make_new_board(len(self.game.board[0]), len(self.game.board))
+
+        while running:
+            for event in pg.event.get():
+                if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                    drawing = True
+                    x, y = self.get_node_from_coordinates(pg.mouse.get_pos())
+                    draw_walls = board[y][x].traversable
+                if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                    drawing = False
+
+                if event.type == pg.QUIT:
+                    running = False
+
+            if drawing:
+                x, y = self.get_node_from_coordinates(pg.mouse.get_pos())
+                node = board[y][x]
+                if node.traversable == draw_walls:
+                    color = self.not_traversable if draw_walls else self.nodes
+                    self.draw_tile(x, y, color)
+                    board[y][x].change_traversable()
+
+            pg.display.update()
+
 
 if __name__ == "__main__":
     problem = AStar(Node(0, 0), Node(49, 49), 50, 50)
     visualizer = visualizer(1200, 900, "A* algorithm", problem)
     visualizer.show_display()
     visualizer.set_up()
+    visualizer.drawing_mode()
     visualizer.show()
