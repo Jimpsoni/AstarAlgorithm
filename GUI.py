@@ -98,6 +98,10 @@ class visualizer:
         pg.display.update()
 
     def run(self):
+        """
+        Solves the shortest path
+        :return:
+        """
         running = True
 
         self.set_up()
@@ -130,6 +134,12 @@ class visualizer:
         return int(x_coord), int(y_coord)
 
     def drawing_mode(self):
+        """
+        Listens when mouse is clicked and then changes traversability of nodes according to its
+        coordinates
+
+        :return: None
+        """
         drawing = False
         running = True
         draw_walls = True
@@ -151,7 +161,7 @@ class visualizer:
             if drawing:
                 x, y = self.get_node_from_coordinates(pg.mouse.get_pos())
                 node = board[y][x]
-                if node.traversable == draw_walls:
+                if node.traversable is draw_walls:
                     color = self.not_traversable if draw_walls else self.nodes
                     self.draw_tile(x, y, color)
                     board[y][x].change_traversable()
