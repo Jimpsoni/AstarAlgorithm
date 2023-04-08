@@ -6,9 +6,10 @@ class Algorithm:
         self.width = width
         self.height = height
 
-        self.board = self.make_board()
+        self.board = self.make_board(width, height)
 
     def get_neighbors(self, node, steps, validate):
+        # TODO could this possibly be made faster?
         nodes = []  # Here we append all the neighbors
 
         if node.x + steps < len(self.board[0]):
@@ -29,11 +30,12 @@ class Algorithm:
 
         return nodes
 
-    def make_board(self) -> list[list[Node]]:
+    @staticmethod
+    def make_board(width, height) -> list[list[Node]]:
         """
         :return: 2D list that has height amount of lists size of the width full of nodes.
         """
-        return [[Node(i, j) for i in range(0, self.width)] for j in range(0, self.height)]
+        return [[Node(i, j) for i in range(0, width)] for j in range(0, height)]
 
     def get_board(self):
         return self.board
