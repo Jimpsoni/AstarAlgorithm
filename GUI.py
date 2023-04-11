@@ -45,15 +45,6 @@ class visualizer:
         self.screen = pg.display.set_mode((self.width, self.height))
         pg.display.set_caption(self.title)
 
-    @staticmethod
-    def show():
-        running = True
-        while running:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    running = False
-
     def set_up(self) -> None:
         """
         Sets up the screen, draws rectangles which represents the tiles on game board
@@ -128,8 +119,18 @@ class visualizer:
             pg.time.wait(self.DELAY)
 
     def get_node_from_coordinates(self, coordinates):
-        x_coord = coordinates[0] // (self.tile_width + 2 * self.between_tiles)
+        x_coord = (coordinates[0] - self.start_point) // (self.tile_width + 2 * self.between_tiles)
         y_coord = coordinates[1] // (self.tile_height + 2 * self.between_tiles)
+
+        if x_coord < 0:
+            x_coord = 0
+        if x_coord > self.game.width - 1:
+            x_coord = self.game.width - 1
+
+        if y_coord < 0:
+            y_coord = 0
+        if y_coord > self.game.height - 1:
+            y_coord = self.game.height - 1
 
         return int(x_coord), int(y_coord)
 
@@ -144,7 +145,7 @@ class visualizer:
         running = True
         draw_walls = True
 
-        board = Algorithm.make_new_board(len(self.game.board[0]), len(self.game.board))
+        board = Algorithm.make_board(len(self.game.board[0]), len(self.game.board))
 
         while running:
             for event in pg.event.get():
@@ -158,6 +159,10 @@ class visualizer:
                 if event.type == pg.QUIT:
                     running = False
 
+                if event.type == pg.KEYDOWN:
+                    self.game.board = board
+                    return
+
             if drawing:
                 x, y = self.get_node_from_coordinates(pg.mouse.get_pos())
                 node = board[y][x]
@@ -169,10 +174,15 @@ class visualizer:
             pg.display.update()
 
 
+class Button(pg.Rect):
+    def __init__(self):
+        super().__init__(10, 10, 10, 10)
+
+
 if __name__ == "__main__":
     problem = AStar(Node(0, 0), Node(49, 49), 50, 50)
     visualizer = visualizer(1200, 900, "A* algorithm", problem)
     visualizer.show_display()
     visualizer.set_up()
     visualizer.drawing_mode()
-    visualizer.show()
+    visualizer.run()
