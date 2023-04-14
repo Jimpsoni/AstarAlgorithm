@@ -27,6 +27,7 @@ class visualizer:
         self.title = title
         pg.init()
 
+        self.buttons = []  # Stores all the buttons we have
         self.game = game
 
         self.width, self.height = width, height
@@ -64,7 +65,15 @@ class visualizer:
         self.draw_tile(self.game.start.x, self.game.start.y, self.start_point_color)
         self.draw_tile(self.game.end.x, self.game.end.y, self.end_point_color)
 
+        self.draw_buttons()
+
         pg.display.update()
+
+    def draw_buttons(self):
+        run = Button(100, 100, 10, 10)
+        run.set_text("Aloita")
+
+        pg.draw.rect(self.screen, pg.color.Color(255, 255, 255), run)
 
     def draw_route(self, shortest_route: list[Node]) -> None:
         """ Draws the final route to destination """
@@ -175,8 +184,25 @@ class visualizer:
 
 
 class Button(pg.Rect):
-    def __init__(self):
-        super().__init__(10, 10, 10, 10)
+    def __init__(self, width, height, x, y):
+        super().__init__(width, height, x, y)
+        self.color = pg.color.Color(255, 255, 255)
+        self.text = None
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+
+    def check_collision(self, x, y):
+        hit_x = (self.x <= x < self.x + self.width)
+        hit_y = (self.y <= y < self.y + self.width)
+        return hit_x and hit_y
+
+    def set_text(self, text):
+        self.text = text
+
+    def set_color(self, color):
+        self.color = color
 
 
 if __name__ == "__main__":
