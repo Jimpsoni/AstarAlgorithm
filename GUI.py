@@ -70,10 +70,19 @@ class visualizer:
         pg.display.update()
 
     def draw_buttons(self):
-        run = Button(100, 100, 10, 10)
-        run.set_text("Aloita")
+        run = Button(150, 75, 50, 100)
+        run.set_text("Start solving")
+
+        settings = Button(150, 75, 50, 250)
+        settings.set_text("Settings")
+
+        run.set_action(self.solve)
+
+        self.buttons.append(run)
+        self.buttons.append(settings)
 
         pg.draw.rect(self.screen, pg.color.Color(255, 255, 255), run)
+        pg.draw.rect(self.screen, pg.color.Color(255, 255, 255), settings)
 
     def draw_route(self, shortest_route: list[Node]) -> None:
         """ Draws the final route to destination """
@@ -97,7 +106,10 @@ class visualizer:
 
         pg.display.update()
 
-    def run(self):
+    def create_maze(self):
+
+
+    def solve(self):
         """
         Solves the shortest path
         :return:
@@ -143,7 +155,13 @@ class visualizer:
 
         return int(x_coord), int(y_coord)
 
-    def drawing_mode(self):
+    def check_button_collisions(self, x, y):
+        for button in self.buttons:
+            if button.check_collision(x, y):
+                button.exe()
+                return
+
+    def mainloop(self):
         """
         Listens when mouse is clicked and then changes traversability of nodes according to its
         coordinates
@@ -158,19 +176,20 @@ class visualizer:
 
         while running:
             for event in pg.event.get():
-                if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+
+                x, y = pg.mouse.get_pos()
+
+                if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and x >= self.start_point:
                     drawing = True
                     x, y = self.get_node_from_coordinates(pg.mouse.get_pos())
                     draw_walls = board[y][x].traversable
                 if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                     drawing = False
+                if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and x < self.start_point:
+                    self.check_button_collisions(x, y)
 
                 if event.type == pg.QUIT:
                     running = False
-
-                if event.type == pg.KEYDOWN:
-                    self.game.board = board
-                    return
 
             if drawing:
                 x, y = self.get_node_from_coordinates(pg.mouse.get_pos())
@@ -186,23 +205,38 @@ class visualizer:
 class Button(pg.Rect):
     def __init__(self, width, height, x, y):
         super().__init__(width, height, x, y)
-        self.color = pg.color.Color(255, 255, 255)
-        self.text = None
+
         self.width = width
         self.height = height
         self.x = x
         self.y = y
 
+        self.action = None
+
     def check_collision(self, x, y):
         hit_x = (self.x <= x < self.x + self.width)
-        hit_y = (self.y <= y < self.y + self.width)
+        hit_y = (self.y <= y < self.y + self.height)
         return hit_x and hit_y
 
     def set_text(self, text):
-        self.text = text
+        # TODO
+        center_x = self.width // 2
+        center_y = self.height // 2
 
-    def set_color(self, color):
-        self.color = color
+        font = pg.font.Font('freesansbold.ttf', 32)
+        text = font.render('GeeksForGeeks', True, pg.color.Color(0, 0, 0))
+
+        return text
+
+    def set_action(self, action):
+        self.action = action
+
+    def exe(self):
+        self.action()
+
+    def set_highlight_decoration(self):
+        # TODO
+        pass
 
 
 if __name__ == "__main__":
