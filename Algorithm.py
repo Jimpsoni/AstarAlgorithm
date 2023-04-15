@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from Node import Node
 
 
@@ -8,7 +9,15 @@ class Algorithm:
 
         self.board = self.make_board(width, height)
 
-    def get_neighbors(self, node, steps, validate):
+    def get_neighbors(self, node: Node, steps: int, validate: Callable) -> list[Node]:
+        """
+        gets the neighboring cells of given node
+
+        :param node: the center node
+        :param steps: how far away the cell is from the center node
+        :param validate: function to filter which neighbors we want
+        :return: list of nodes which match the criteria
+        """
         # TODO could this possibly be made faster?
         nodes = []  # Here we append all the neighbors
 
@@ -37,7 +46,7 @@ class Algorithm:
         """
         return [[Node(i, j) for i in range(0, width)] for j in range(0, height)]
 
-    def get_board(self):
+    def get_board(self) -> list[list[Node]]:
         return self.board
 
     def print_board(self) -> None:
